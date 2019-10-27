@@ -1,0 +1,33 @@
+items:
+  case-pair:
+    expected: a->b
+    data:
+      graph:
+        a-b: ab
+        b-a: ba
+  case-triangle:
+    expected: a->b->c
+    data:
+      graph:
+        a-b: ab
+        b-c: bc
+        c-a: ca
+  case-no-loop:
+    expected: ''
+    data:
+      graph:
+        a-b: ab
+        b-c: bc
+        d-e: de
+  case-two-loops:
+    expected: a->b->c->f,c->f->g
+    data:
+      graph:
+        a-b: ab
+        b-c: bc
+        c-e: ce
+        c-f: cf
+        f-g: fg
+        g-c: gc
+        f-a: fa
+

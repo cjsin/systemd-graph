@@ -65,7 +65,7 @@ def test_visit_node():
     c = g.node('c')
     assert None not in [a,b,c]
     v.Visit()
-    #verb(pformat(v.datas))
+
     verb(pformat(record))
     assert record.origins['c'] == a
     assert record.origins['b'] is None
