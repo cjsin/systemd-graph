@@ -1,0 +1,44 @@
+items:
+    case-pair:
+        expected:
+            cycles: a->b
+            nodecount: 2
+            edgecount: 2
+        data:
+            graph:
+                a-b: ab
+                b-a: ba
+    case-triangle:
+        expected:
+            cycles: a->b->c
+            nodecount: 3
+            edgecount: 3
+        data:
+            graph:
+                a-b: ab
+                b-c: bc
+                c-a: ca
+    case-no-loop:
+        expected:
+            cycles: ''
+            nodecount: 5
+            edgecount: 3
+        data:
+            graph:
+                a-b: ab
+                b-c: bc
+                d-e: de
+    case-two-loops:
+        expected:
+            cycles: a->b->c->f,c->f->g
+            nodecount: 5 # Note 'd' is missing
+            edgecount: 7
+        data:
+            graph:
+                a-b: ab
+                b-c: bc
+                c-e: ce
+                c-f: cf
+                f-g: fg
+                g-c: gc
+                f-a: fa
