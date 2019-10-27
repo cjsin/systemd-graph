@@ -106,9 +106,9 @@ class Visitor:
 
             for vid in visit_also:
                 if vid is not None:
-                    vdata = data.d[vid]
+                    vdata = data.d.get(vid, None)
                     if not vdata:
-                        verb("****BUG***** visitor data for {vid} not yet initialised - edge to un-indexted node, Creating '{}'".format(nid))
+                        verb(f"****BUG***** visitor data for {vid} not yet initialised - edge to un-indexed node, Creating '{vid}'")
                         vdata = self.init_node(nid=vid)
                     data.v=vdata
                     self.visit_node(vdata, iteration, n, steps+1)

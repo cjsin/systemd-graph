@@ -15,7 +15,8 @@ PYT       := $(PYT_WRAP) $(PYT_FLAGS) $(PYT_CAP)
 SRCS      := $(shell find $(SRC)/ -name "*.py")
 TESTS     := $(shell find $(TEST)/ -name "*.py")
 PYCACHE   := $(PWD)
-TARGETED  := test/test_cycle.py
+TEST_TGT  := test/test_cycle.py
+RUN_TGT   := src/main.py
 #export PYTEST_ADDOPTS="-rap"
 
 PYTHONPATH := $(PWD)/src:$(PWD)/test
@@ -43,7 +44,7 @@ test: $(SOURCES)
 	$(PYT) $(TEST)
 
 ttest: $(SOURCES)
-	$(PYT) $(TARGETED)
+	$(PYT) $(TEST_TGT)
 
 venv:
 	python3 -m venv venv
@@ -55,4 +56,8 @@ venv:
 requirements: .requirements
 
 run: .requirements
-	$(PYTHON) src/systemd.py
+	@$(PYTHON) $(RUN_TGT)
+
+dot:
+	@$(PYTHON) $(RUN_TGT) > test.dot
+	xdot test.dot < /dev/null > /dev/null 2>&1 &

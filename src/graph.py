@@ -46,6 +46,7 @@ class Node(Named):
         # So the type hint is useful only for basic types (int, etc) and typing
         self._edges=OrderedDict()
         verb("Create node({id(self)}={name})")
+
     def __repr__(self):
         edgestr = ",".join([repr(x) for x in self._edges.values()])
         return f"{self.__class__.__name__}.{self.name}(id={self.token},edges={edgestr})"
@@ -55,6 +56,9 @@ class Node(Named):
 
     def id(self) -> str:
         return self.token
+
+    def key(self) -> int:
+        return id(self)
 
     def add_edge(self, other: Node):
         return self._edge(other)

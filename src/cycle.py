@@ -46,7 +46,7 @@ class CycleDetection:
         di = data.i
         n = data.n
         if not n:
-            log.error(f"ERROR: no node for {data}")
+            verb(f"ERROR: no node for {data.nid}")
             return False
         nid = data.nid
         visting = data.v
