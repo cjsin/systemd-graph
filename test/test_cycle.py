@@ -14,7 +14,7 @@ def test_cycle():
     cstr = ",".join(sorted(cycles.keys()))
     print_lines(GVFormatter().graph(g))
     print(cstr)
-    assert cstr == 'c->e->b'
+    assert cstr == 'b->c->e'
     # a = Node("a")
     # b = Node("b")
     # c = Node("c")

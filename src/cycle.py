@@ -11,38 +11,33 @@ class CycleDetection:
         return {'count':0, 'cycle':0}
 
     @staticmethod
-    def walk_cycle(data: dict, origin: Node) -> NodeList:
+    def walk_cycle(data: dict) -> NodeList:
         nid = data.nid
-        verb(f"Walking back along a cycle from {nid}, prior={origin}")
+        start = nid
+        verb(f"Walking forward along a cycle from {nid}")
         seq = [data.n]
-        prior_node = origin
         cycle_infos = data.get('cycle_infos',[])
         cycle_infos.append(seq)
         data.cycle_infos = cycle_infos
         dataset = data.d
-        oid = origin.id()
         max_iter = 100
         itern = 0
-        while origin is not None and oid != nid:
-            seq.insert(0,origin)
+        v = data.v
+        while v is not None and v.nid != nid:
+            seq.append(v.n)
             if itern >= max_iter:
                 log.error(f"Breaking out of loop - either loop is too big (max = {max_iter}) or there is a bug.")
                 break
             itern += 1
-            pdata = data.d[oid]
-
-            pdata.cycle += 1
-            pdata.cycle_infos = cycle_infos
-            origin = pdata.o
-            if origin is None:
-                verb(f"Walking back, did not find cycle node {nid}, reached start of this iteration at {oid} ")
+            v.cycle += 1
+            # add this cycle to this node
+            vci = v.get('cycle_infos',[])
+            vci.append(seq)
+            v.cycle_infos=vci
+            if v.v is None:
+                verb(f"Walking back, did not find cycle node {nid} after reaching {v.nid}")
                 break
-            last = oid
-            oid = origin.id()
-            if oid == last:
-                verb("self loop while walking back!")
-                break
-            #verb(f"next prior is {origin}")
+            v = v.v
         verb("Cycle(length "+str(len(seq))+"):"+"->".join([str(x) for x in seq]))
         return seq
 
@@ -60,7 +55,8 @@ class CycleDetection:
         if di == iteration:
             verb(f"Iteration {iteration}[{steps}] - Found a cycle - Node {nid} was already visited in iteration {iteration}. Arrived via {origin}. Left last time via {data.v}")
             data.cycle+=1
-            CycleDetection.walk_cycle(data,origin)
+            #CycleDetection.walk_cycle(data,origin)
+            CycleDetection.walk_cycle(data)
             return False
         elif data.count:
             verb(f"This node was already visited in a previous iteration ({di})")
