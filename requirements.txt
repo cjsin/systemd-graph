@@ -1,0 +1,14 @@
+coverage
+orderedattrdict
+pep8
+pylint
+pytest
+pytest-cache
+pytest-cov
+pytest-helpers-namespace
+pytest-pep8
+pytest-pylint
+pytest-sugar
+PyYAML
+setuptools
+wheel

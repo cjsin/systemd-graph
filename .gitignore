@@ -1,0 +1,4 @@
+venv
+.requirements
+__pycache__
+test*.dot
