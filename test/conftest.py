@@ -17,9 +17,9 @@ import yaml_cycles
 import yaml_battery
 
 def pytest_collect_file(parent, path):
-    check = yaml_cycles.pytest_collect_file(parent, path)
-    if check is not None:
-        return check
+    # check = yaml_cycles.pytest_collect_file(parent, path)
+    # if check is not None:
+    #     return check
     check = yaml_battery.pytest_collect_file(parent, path)
     if check is not None:
         return check
