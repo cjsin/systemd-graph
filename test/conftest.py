@@ -1,3 +1,10 @@
+# NOTE: this file is a kind of code-based global configuration for pytest
+
+import sys
+
+sys.dont_write_bytecode = True
+
+
 # from visitor import *
 # from graph import *
 # from pprint import pformat, pprint

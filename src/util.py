@@ -25,6 +25,25 @@ def ep(s):
         end='' if s[0] == '\r' else '\n'
         print(s, file=sys.stderr, end=end)
 
+def verb1(*args):
+    verb(1,*args)
+def verb2(*args):
+    verb(2,*args)
+def verb3(*args):
+    verb(3,*args)
+def verb4(*args):
+    verb(4,*args)
+def verb5(*args):
+    verb(5,*args)
+def verb6(*args):
+    verb(6,*args)
+def verb7(*args):
+    verb(7,*args)
+def verb8(*args):
+    verb(8,*args)
+def verb9(*args):
+    verb(9,*args)
+
 def verb(*args,**kwargs):
     global VERBOSE
     level=None

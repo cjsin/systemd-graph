@@ -1,10 +1,11 @@
 from __future__ import annotations # Allow type hints without forward declarations
 
+import traceback
 from collections import OrderedDict, Counter
 from util import Named
 from typing import List, Set, Dict, Tuple, Optional
 StrList=List[str]
-from util import ep, print_lines
+from util import *
 from pprint import pformat
 import re
 import logging
@@ -12,6 +13,8 @@ import logging
 log = logging.getLogger(__name__)
 
 class Label(Named):
+    count: int
+
     def __init__(self, name: str):
         super().__init__(name)
         self.count=0
@@ -32,14 +35,18 @@ class Label(Named):
 LabelList=List[Label]
 
 class Node(Named):
+    token: str
+    _edges: OrderedDict
+
     def __init__(self, name: str):
         super().__init__(name)
         self.token = self._token()
+        # Note that we cannot initialise _edges  etc with an object
+        # because then it would be shared between all instances!
+        # So the type hint is useful only for basic types (int, etc) and typing
         self._edges=OrderedDict()
-        ep("Create node({id(self)}={name})")
+        verb("Create node({id(self)}={name})")
     def __repr__(self):
-        #ep(self._edges)
-        #ev=[x for x in self.edges.values()]
         edgestr = ",".join([repr(x) for x in self._edges.values()])
         return f"{self.__class__.__name__}.{self.name}(id={self.token},edges={edgestr})"
 
@@ -72,6 +79,10 @@ class Node(Named):
 NodeList=List[Node]
 
 class Edge(Named):
+    a: Node
+    b: Node
+    _labels: OrderedDict
+
     def __init__(self,a,b, *labels):
         assert a is not None
         assert b is not None
@@ -113,7 +124,7 @@ class Edge(Named):
     def incr(self,labeltext : str) -> Label:
         l = self._label(labeltext)
         if l:
-            ep(f"Incrementing label {labeltext}")
+            verb(f"Incrementing label {labeltext}")
             l.incr()
         return l
 
@@ -193,11 +204,11 @@ class Graph(Named):
         self._edges[e.key()]=e
         a = e.a
         if a.id() not in self._nodes:
-            ep(f"Warning: Node {a.id()} is not yet contained within the graph - adding it.")
+            verb2(f"Warning: Node {a.id()} is not yet contained within the graph - adding it.")
             self.add_node(a)
         b = e.b
         if b.id() not in self._nodes:
-            log.warning(f"Node {b.id()} is not yet contained within the graph - adding it.")
+            verb2(f"Node {b.id()} is not yet contained within the graph - adding it.")
             self.add_node(b)
         return e
 
@@ -268,7 +279,7 @@ class Graph(Named):
         if not ret:
             ep("No Issues were detected:")
         if ret:
-            ep("Issues were detected:")
+            ep("Warning: Issues were detected with this graph:")
             print_lines(ret)
 
         return ret

@@ -6,11 +6,16 @@ PYT_FLAGS :=
 PYTHON    := $(VENV) && python
 PIP       := $(VENV) && pip
 PYT_WRAP  := $(VENV) && ./tests-wrapper.sh --top=$(PWD) --src=$(SRC) --path=$(SRC) --path=$(TEST) --mode=path
-PYT       := $(PYT_WRAP) $(PYT_FLAGS)
+
+# the -s flag means disable capture of stdout/stderr. Useful when a test is hanging due to recursion.
+#PYT_CAP   := -s
+PYT_CAP   :=
+
+PYT       := $(PYT_WRAP) $(PYT_FLAGS) $(PYT_CAP)
 SRCS      := $(shell find $(SRC)/ -name "*.py")
 TESTS     := $(shell find $(TEST)/ -name "*.py")
 PYCACHE   := $(PWD)
-TARGETED  := test/test_fucked.py
+TARGETED  := test/test_cycle.py
 #export PYTEST_ADDOPTS="-rap"
 
 PYTHONPATH := $(PWD)/src:$(PWD)/test
@@ -29,7 +34,10 @@ export PYTHONDONTWRITEBYTECODE
 
 .PHONY: all test
 
-all: test
+all: .env test run
+
+.env:
+	echo $(PWD)/src:$(PWD)/test > .env
 
 test: $(SOURCES)
 	$(PYT) $(TEST)

@@ -26,7 +26,7 @@ class Visitor:
 
     def init_node(self,nid=None,n=None) -> AttrDict:
         if n is None and nid is None:
-            verb("init_node called with no valid parameter")
+            log.error("init_node called with no valid parameter")
             return None
         elif nid is None:
             nid = n.id()

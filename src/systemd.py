@@ -144,18 +144,18 @@ class Systemd:
             name, load, active, sub, *descr = l.split(None,5)
             verb(f"Generate unit {name}")
             if not notfound and load == 'not-found':
-                ep(f"Skip not-found {name}")
+                verb1(f"Skip not-found {name}")
                 continue
             elif not inactive and active == 'inactive':
-                ep(f"Skip inactive {name}")
+                verb1(f"Skip inactive {name}")
                 continue
             elif not dead and sub == 'dead':
-                ep(f"Skip dead {name}")
+                verb1(f"Skip dead {name}")
                 continue
             elif not exited and sub == 'exited':
-                ep(f"Skip exited {name}")
+                verb1(f"Skip exited {name}")
                 continue
-            verb(2,f"Generate unit '{name}'")
+            verb2(f"Generate unit '{name}'")
             u = self._unit(name)
             u.load = load
             u.active = active

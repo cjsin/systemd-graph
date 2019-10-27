@@ -3,6 +3,9 @@ from graph import *
 from util import ep
 
 class CycleDetection:
+
+    #example: ClassVar[int] = 4
+
     @staticmethod
     def template_func(data: dict):
         return {'count':0, 'cycle':0}
@@ -18,15 +21,28 @@ class CycleDetection:
         data.cycle_infos = cycle_infos
         dataset = data.d
         oid = origin.id()
+        max_iter = 100
+        itern = 0
         while origin is not None and oid != nid:
             seq.insert(0,origin)
+            if itern >= max_iter:
+                log.error(f"Breaking out of loop - either loop is too big (max = {max_iter}) or there is a bug.")
+                break
+            itern += 1
             pdata = data.d[oid]
-            verb(f"pdata is {pdata}")
+
             pdata.cycle += 1
             pdata.cycle_infos = cycle_infos
             origin = pdata.o
+            if origin is None:
+                verb(f"Walking back, did not find cycle node {nid}, reached start of this iteration at {oid} ")
+                break
+            last = oid
             oid = origin.id()
-            verb(f"next prior is {origin}")
+            if oid == last:
+                verb("self loop while walking back!")
+                break
+            #verb(f"next prior is {origin}")
         verb("Cycle(length "+str(len(seq))+"):"+"->".join([str(x) for x in seq]))
         return seq
 
@@ -35,7 +51,7 @@ class CycleDetection:
         di = data.i
         n = data.n
         if not n:
-            ep(f"ERROR: no node for {data}")
+            log.error(f"ERROR: no node for {data}")
             return False
         nid = data.nid
         visting = data.v

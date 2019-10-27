@@ -8,50 +8,11 @@ def dump_graph(g):
     print_lines(GVFormatter().graph(g))
 
 def load_graph(name, test_data):
-    ga,gb=load_graphx(name,test_data)
-    #ga fails and gb passes
-    print(repr(ga))
-    print(repr(gb))
-    #assert False
-    return gb
-
-def load_graphx(name, test_data):
-
-    ep("Generate ga")
-    ga=load_graph1(name, test_data)
-    ep(f"ga={ga}")
-    ga.check()
-
-    ep("Generate gb")
-    gb=load_graph2(name, test_data)
-    ep(f"gb={gb}")
-    gb.check()
-
-    ep("Compare ga and gb: ")
-    assert repr(ga) == repr(gb)
-    ep(f"{repr(ga)} == {repr(gb)}")
-    return ga,gb
-
-def load_graph1(name, test_data):
-    g = Graph(name)
-    for edgespec,label in test_data.items():
-        a,b = edgespec.split('-')
-        # a = g.add_node(Node(a))
-        # b = g.add_node(Node(b))
-        a = g.node(a) or g.add_node(Node(a))
-        b = g.node(b) or g.add_node(Node(b))
-        e = g.add_edge(a.add_edge(b))
-        e.add_label(label)
-    return g
-
-def load_graph2(name,test_data):
     g = Graph(name)
     for edgespec,label in test_data.items():
         a,b = edgespec.split('-')
         a = g.node(a) or g.add_node(Node(a))
         b = g.node(b) or g.add_node(Node(b))
-        #a = Node(a)
-        #b = Node(b)
         e = g.add_edge(a.add_edge(b))
         e.add_label(label)
     return g
