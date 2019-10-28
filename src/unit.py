@@ -39,27 +39,39 @@ class Unit(Node):
     REQUIRES_RELATIONSHIPS = [REQUIRES, MOUNTS]
     HINT_RELATIONSHIPS = [WANTS, WANTEDBY]
     SOLID_RELATIONSHIPS = [AFTER,BEFORE,REQUIRES,MOUNTS]
-    SHAPES={
-        TARGET: "doubleoctagon",
-        SOCKET: "insulator",
-        PATH: "cds",
-        DEVICE: "pentagon",
-        SLICE: "assembly",
-        MOUNT: "folder",
-        SERVICE: "egg",
-        TIMER: "star",
-        SWAP: "noverhang",
-        SCOPE: "component",
-        AUTOMOUNT: "tab"
-    }
+    NOTFOUND='notfound'
+    LOADED='loaded'
+    INACTIVE='inactive'
+    ACTIVE='active'
+    DEAD='dead'
+    EXITED='exited'
+    RUNNING='running'
+    PLUGGED='plugged'
+    WAITING='waiting'
+    MOUNTED='mounted'
+    FAILED='failed'
+    LISTENING='listening'
+    STATUS = [
+            NOTFOUND,LOADED,
+            INACTIVE,ACTIVE,
+            DEAD,EXITED,RUNNING,PLUGGED,WAITING,MOUNTED,FAILED,LISTENING
+        ]
+
+    def status_single(self, what):
+        return what in self.status
+
+    def status_match(self, whats):
+        for w in whats:
+            if w in self.status:
+                return True
+        return False
+
     def __init__(self, name):
         super().__init__(name)
-        self.load = ""
-        self.active = ""
-        self.sub = ""
         self.descr = ""
         self.relationships=OrderedDict()
         self.loaded=False
+        self.status=[]
         for kind in Unit.RELATIONSHIPS:
             self.relationships[kind]=set()
 
@@ -68,6 +80,7 @@ class Unit(Node):
 
     def __str__(self):
         return self.token
+
 
     def _relationships(self, kind):
         return self.relationships[kind]

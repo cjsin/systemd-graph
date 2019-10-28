@@ -35,7 +35,7 @@ class CycleItem(YamlItem):
         cstr = ",".join(sorted(cycles.keys()))
         print(cstr)
         if cstr != expected_cycles:
-            ep(f"Mismatch between actual {cstr} and expected {expected_cycles}")
+            #ep(f"Mismatch between actual {cstr} and expected {expected_cycles}")
             raise YamlException(self, expected_cycles, cstr)
         else:
             ep("test passed?")

@@ -72,7 +72,7 @@ class RepeatFilter(GraphFilter):
                     consolidated=True
                     break
         if not consolidated:
-            ep("Filter reached max iterations before consolidating")
+            ep("Filter "+self.__class__.__name__+"/"+self.other_filter.__class__.__name__+" reached max iterations before consolidating")
         else:
             #ep(f"Filter consolidated after {iterations} iterations.")
             pass

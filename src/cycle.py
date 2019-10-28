@@ -70,7 +70,7 @@ class CycleDetection:
         datas = v.Visit()
         cycles = AttrDict()
         cyclic = AttrDict()
-        ep(pformat(datas))
+        #ep(pformat(datas))
         for nid, data in datas.items():
             c = data.get('cycle', None)
             cis = data.get('cycle_infos', None)

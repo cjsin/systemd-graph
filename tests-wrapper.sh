@@ -12,6 +12,14 @@ function msg()
     echo "${@}" 1>&2
 }
 
+function verb()
+{
+    if (( ${VERBOSE:+0} ))
+    then
+        msg "${@}"
+    fi
+}
+
 function err()
 {
     msg "ERROR:" "${@}"
@@ -19,7 +27,7 @@ function err()
 
 function run()
 {
-    msg "${@}"
+    verb "${@}"
     "${@}"
 }
 
@@ -123,26 +131,46 @@ function main()
             ;;
     esac
 
-    pp=""
-    for arg in "${ADDPATHS[@]}"
+    local -A added=()
+    local -a pp=()
+    local -a new_pp=()
+    IFS=: read -a pp <<< "${PYTHONPATH}"
+
+    local arg
+    for arg in "${ADDPATHS[@]}" "${pp[@]}"
     do
-        arg=$(readlink -f "${arg}")
-        pp="${pp}${pp:+:}${arg}"
+        if [[ -n "${arg}" ]]
+        then
+            arg=$(readlink -f "${arg}")
+            if [[ -z "${added["${arg}"]}" ]]
+            then
+                added["${arg}"]=1
+                new_pp+=("${arg}")
+            fi
+        fi
     done
 
-    PYTHONPATH="${pp}${PYTHONPATH:+:}${PYTHONPATH}"
-    msg export PYTHONPATH="${PYTHONPATH}"
-    export PYTHONPATH="${PYTHONPATH}"
+    PYTHONPATH=""
+    for arg in "${new_pp[@]}"
+    do
+        PYTHONPATH="${PYTHONPATH}${PYTHONPATH:+:}${arg}"
+    done
+
+    verb export PYTHONPATH="${PYTHONPATH}"
+    export PYTHONPATH
+
+    PYTEST="${PYTEST:-pytest-3}"
+    PYTHON="${PYTHON:-python3}"
 
     set -e
     case "${MODE}" in
         cd)
-            msg cd "${SRCDIR}" "&&" run python3 -m pytest "${mod[@]}"
-            cd "${SRCDIR}" && run python3 -m pytest "${mod[@]}"
+            verb cd "${SRCDIR}" "&&" run ${PYTHON} -m pytest "${mod[@]}"
+            cd "${SRCDIR}" && run ${PYTHON} -m pytest "${mod[@]}"
             ;;
         path)
-            msg "Running pytest-3 with PYTHONPATH setting and flags: ${same[*]}"
-            run pytest "${same[@]}"
+            verb "Running ${PYTEST} with PYTHONPATH setting and flags: ${same[*]}"
+            run ${PYTEST} "${same[@]}"
             ;;
         *)
             err "Unrecognised mode: ${mode}"
@@ -151,5 +179,5 @@ function main()
 
 }
 
-msg "${0}" "${@}"
+verb "${0}" "${@}"
 main "${@}"

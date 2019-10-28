@@ -3,7 +3,7 @@ import pytest
 from visitor import Visitor
 from graph import *
 from util import verb
-from orderedattrdict import AttrDict, Tree, DefaultAttrDict
+from attrdict import AttrDict
 from pprint import pprint, pformat
 from testutil import load_graph
 
@@ -15,16 +15,13 @@ def new_visitor(sorting=False, data=None, extra_data=None):
     record.visited=[]
     record.origins={}
 
-    def tf(d: dict):
+    def tf(d):
         return extra_data
     def vf(data, iteration, origin, steps):
-        verb(f"Visit func for {data.nid}")
-        verb(f"record is {record}")
         if data.nid in record.visited:
             verb("This node was already visited.")
             return False
         verb("This node not visited yet.")
-        verb(f"Will set origins for {data.nid} to {origin}")
         record.visited.append(data.nid)
         record.origins[data.nid]=origin
         return True

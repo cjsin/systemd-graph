@@ -7,7 +7,7 @@ from graph import *
 from testutil import load_graph, dump_graph
 
 class UppercaseNode(Node):
-    def _token(self) -> str:
+    def _token(self):
         return self.name.upper()
 
 def test_repr():
@@ -189,7 +189,7 @@ def compare_alternate_build_methods(test_data):
     assert repr(ga) == repr(gb)
 
 def dump(g):
-    ep(f"Graph {g} :")
+    #ep(f"Graph {g} :")
     dump_graph(g)
     ep(repr(g))
 

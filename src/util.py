@@ -118,9 +118,8 @@ class Named:
     def __repr__(self):
         return self.id()
 
-
-def print_lines(lines):
+def print_lines(lines, file=sys.stdout):
     for x in lines:
-        print(x)
+        print(x, file=file)
 
 check_environ()

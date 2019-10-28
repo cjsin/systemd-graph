@@ -16,6 +16,7 @@ class Visitor:
         self.visit_func=visit_func
         self.datas=AttrDict()
         self.sorting=sorting
+        self.to_visit=set()
 
     def nodes(self):
         if self.sorting:
@@ -32,6 +33,7 @@ class Visitor:
             nid = n.id()
         elif n is None:
             n = self.g.node(nid)
+        self.to_visit.add(nid)
 
         #verb(f"Init node data for {nid}")
 
@@ -58,6 +60,7 @@ class Visitor:
 
     def init_data(self):
         self.datas = AttrDict()
+        self.to_visit=set()
         self.idx = 0
         for n in self.nodes():
             self.init_node(n=n)
@@ -117,8 +120,12 @@ class Visitor:
     def Visit(self):
         self.init_data()
 
+        # NOTE the set of nodes to visit is used like this
+        # because it can grow during the visiting, if new nodes are discovered.
         iteration = 0
-        for data in self.datas.values():
+        while len(self.to_visit):
+            nid = self.to_visit.pop()
+            data = self.datas[nid]
             iteration +=1
             verb("Visiting {} with iteration = {} step 0 from nowhere".format(data.nid,iteration))
             self.visit_node(data, iteration, None, 0)

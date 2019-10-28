@@ -1,5 +1,6 @@
 coverage
-orderedattrdict
+#orderedattrdict
+dictobj
 pep8
 pylint
 pytest

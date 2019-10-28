@@ -1,0 +1,23 @@
+#!/bin/bash
+
+script="${BASH_SOURCE[0]}"
+script=$(readlink -f "${script}")
+script_dir="${script%/*}"
+env_file="${script_dir}/.env"
+PYTHON="${PYTHON:-python3}"
+
+function load_env()
+{
+    if [[ -f "${env_file}" ]]
+    then
+        . "${env_file}"
+    fi
+}
+
+function main()
+{
+    load_env
+    ${PYTHON} src/main.py "${@}"
+}
+
+main "${@}"
