@@ -168,6 +168,7 @@ class Systemd:
             elif k in Unit.STATUS:
                 statuses.add(k)
             else:
+                ep("Adding name matcher " + str(k))
                 name_matchers.append(k)
 
         startwith=set()
@@ -176,11 +177,17 @@ class Systemd:
             for u in self.Units():
                 startwith.add(u.name)
         else:
+            ep("Searching " + str(len(self.Units())) + " with " + str(len(name_matchers)) + " name matchers")
             for u in self.Units():
                 for nm in name_matchers:
                     if re.search(nm,u.name):
+                        ep("matched " + u.name)
                         startwith.add(u.name)
                         break
+                    elif u.name.startswith("test-loop"):
+                        ep("matcher " + str(nm)+" did not match " + u.name)
+                    #else:
+                    #    ep("non test-loop")
         verb2("Starting with a set of units:"+pformat(startwith))
         if statuses:
             filterout = set()

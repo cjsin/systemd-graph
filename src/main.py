@@ -52,6 +52,17 @@ def parse_args(argv):
     parser.add_argument("--before", action='store_true', default=None)
     parser.add_argument("--after", action='store_true', default=None)
     parser.add_argument("--requires-mounts", action='store_true', default=None)
+
+    parser.add_argument("--active", action='store_true', default=None)
+    parser.add_argument("--inactive", action='store_true', default=None)
+    parser.add_argument("--dead", action='store_true', default=None)
+    parser.add_argument("--running", action='store_true', default=None)
+    parser.add_argument("--loaded", action='store_true', default=None)
+    parser.add_argument("--not-loaded", action='store_true', default=None)
+    parser.add_argument("--listening", action='store_true', default=None)
+    parser.add_argument("--mounted", action='store_true', default=None)
+    parser.add_argument("--plugged", action='store_true', default=None)
+
     args = parser.parse_args(argv)
     return parser, args
 
@@ -61,7 +72,7 @@ def main():
 
         kinds=Unit.STATUS
 
-        startwith=['all']
+        startwith=[]
         if args.units:
             startwith=[]
             for u in args.units:
@@ -69,6 +80,28 @@ def main():
                     startwith.append(u)
                 else:
                     startwith.append(re.compile(u))
+
+        if args.active:
+            startwith.append('active')
+        if args.inactive:
+            startwith.append('inactive')
+        if args.dead:
+            startwith.append('dead')
+        if args.running:
+            startwith.append('running')
+        if args.loaded:
+            startwith.append('loaded')
+        if args.not_loaded:
+            startwith.append('not-loaded')
+        if args.listening:
+            startwith.append('listening')
+        if args.mounted:
+            startwith.append('mounted')
+        if args.plugged:
+            startwith.append('plugged')
+
+        if not startwith:
+            startwith=['all']
 
         sb =  LiveBackend(remote=args.remote,ssh=args.ssh)
 

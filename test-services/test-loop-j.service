@@ -1,0 +1,12 @@
+[Unit]
+DefaultDependencies=no
+Before=test-loop-h.service
+After=test-loop-i.service
+Requires=test-loop-b.service
+[Service]
+RemainAfterExit=yes
+Type=oneshot
+ExecStart=/bin/echo j
+[Install]
+WantedBy=test-loop.target
+

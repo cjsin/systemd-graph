@@ -1,0 +1,11 @@
+[Unit]
+DefaultDependencies=no
+Before=
+After=
+Requires=test-loop-d.service
+[Service]
+RemainAfterExit=yes
+Type=oneshot
+ExecStart=/bin/echo a
+[Install]
+WantedBy=test-loop.target
