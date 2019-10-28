@@ -9,7 +9,7 @@ from graph import *
 from formatters import *
 import traceback
 from filters import *
-from orderedattrdict import AttrDict
+from attrdict import AttrDict
 #Node, Label, Edge, Graph, CycleDetection, Visitor, GraphAnalyzer, GraphFilter, CycleFilter, RimFilter, SinkFilter, SourceFilter, LeafFilter, GVFormatter
 import traceback
 
@@ -24,9 +24,10 @@ class SystemdBackend:
         pass
 
 class CacheBackend(SystemdBackend):
+    DEFAULT_FILE=".systemd-cache.yml"
     def __init__(self, backend=None, file=None):
         if file is None:
-            file=".systemd-cache.yml"
+            file=CacheBackend.DEFAULT_FILE
         self.file = file
         if backend is None:
             backend = LiveBackend()
@@ -37,10 +38,10 @@ class CacheBackend(SystemdBackend):
             self.load()
 
     def __str__(self):
-        return f"Cache({self.file})"
+        return "Cache({})".format(self.file)
 
     def load(self):
-        ep(f"Load cache {self.file}")
+        #ep(f"Load cache {self.file}")
         import yaml
         try:
             with open(self.file,"r") as f:
@@ -59,19 +60,19 @@ class CacheBackend(SystemdBackend):
         """ Save, if this backend has the capability """
         self.modified = False
         if not self.modified:
-            ep(f"Skip saving - no changes.")
+            #ep(f"Skip saving - no changes.")
             return True
-        ep(f"Save cache {self.file}")
+        #ep(f"Save cache {self.file}")
         # TODO - save yaml file
         import yaml
         try:
             ydata = dict()
-            ep(f"Save cache self data has {len(self.data.keys())} keys")
+            #ep(f"Save cache self data has {len(self.data.keys())} keys")
             ydata.update(self.data)
             strdata = yaml.safe_dump(ydata)
             with open(self.file,"w") as f:
                 f.write(strdata)
-                ep(f"Save cache {len(ydata.keys())}")
+                #ep(f"Save cache {len(ydata.keys())}")
                 self.modified=False
                 return True
         except:
@@ -87,7 +88,7 @@ class CacheBackend(SystemdBackend):
         return self.data[prop]
 
     def unit_property(self, name, kind):
-        prop = f"{name}.{kind}"
+        prop = name + "."+kind
         if prop not in self.data:
             #ep("Call live backend for data")
             self.data[prop] = self.backend.unit_property(name, kind)

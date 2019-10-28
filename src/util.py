@@ -74,7 +74,7 @@ def verb(*args,**kwargs):
         if s is not None:
             print("[verb-"+str(level)+"] "+s, file=f)
 
-def capture(cmd, verbose=False) -> str:
+def capture(cmd, verbose=False):
     if verbose:
         print("Run:"+" ".join(cmd), file=sys.stderr)
     cproc = subprocess.run(cmd, stdout=subprocess.PIPE,  stderr=subprocess.PIPE, universal_newlines=True)
@@ -111,11 +111,11 @@ def check_environ():
 class Named:
     def __init__(self, name):
         self.name=name
-    def id(self) -> str:
+    def id(self):
         return self.__class__.__name__ +"/"+self.name
-    def __str__(self) -> str:
+    def __str__(self):
         return self.id()
-    def __repr__(self) -> str:
+    def __repr__(self):
         return self.id()
 
 

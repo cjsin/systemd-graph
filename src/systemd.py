@@ -9,7 +9,7 @@ from graph import *
 from formatters import *
 import traceback
 from filters import *
-from orderedattrdict import AttrDict
+from attrdict import AttrDict
 #Node, Label, Edge, Graph, CycleDetection, Visitor, GraphAnalyzer, GraphFilter, CycleFilter, RimFilter, SinkFilter, SourceFilter, LeafFilter, GVFormatter
 import traceback
 from backend import *
@@ -25,7 +25,7 @@ class SystemdGVFormatter(GVFormatter):
         if what in Unit.SHAPES:
             ret['shape']=Unit.SHAPES[what]
         return ret
-    # def edge_labels(self, e) -> str:
+    # def edge_labels(self, e):
     #     shorts=[]
     #     for x in e.Labels():
     #         t=x.name
@@ -58,20 +58,20 @@ class Systemd:
         """ Perform an initial load of available units. FUrther info may be deferred."""
         units = self.backend.load_units()
         for name, udata in units.items():
-            verb(f"Generate unit {name}")
+            #verb(f"Generate unit {name}")
             if not self.notfound and udata['load'] == 'not-found':
-                verb1(f"Skip not-found {name}")
+                #verb1(f"Skip not-found {name}")
                 continue
             elif not self.inactive and udata['active'] == 'inactive':
-                verb1(f"Skip inactive {name}")
+                #verb1(f"Skip inactive {name}")
                 continue
             elif not self.dead and udata['sub'] == 'dead':
-                verb1(f"Skip dead {name}")
+                #verb1(f"Skip dead {name}")
                 continue
             elif not self.exited and udata['sub'] == 'exited':
-                verb1(f"Skip exited {name}")
+                #verb1(f"Skip exited {name}")
                 continue
-            verb2(f"Generate unit '{name}'")
+            #verb2(f"Generate unit '{name}'")
             u = self._unit(name)
             u.load = udata['load']
             u.active = udata['active']
@@ -91,7 +91,7 @@ class Systemd:
     def Units(self):
         return list(self.units.values())
 
-    def _unit(self, name) -> Unit:
+    def _unit(self, name):
         if name in self.units:
             return self.units[name]
         else:
@@ -101,10 +101,10 @@ class Systemd:
             self.deferred.add(name)
             return u
 
-    def Unit(self,name) -> Unit:
+    def Unit(self,name):
         u = self._unit(name)
         if name in self.deferred or not u.loaded:
-            ep(f"\rLoading deferred unit {name} \x1b[K")
+            #ep(f"\rLoading deferred unit {name} \x1b[K")
             self._load_unit(u)
         return u
 
@@ -140,14 +140,16 @@ class Systemd:
         units = self.Units()
         nunits = len(units)
 
-        ep(f"{nunits} units to process.")
+        #ep(f"{nunits} units to process.")
         if verbose() > 1:
             for n in range(0,len(units)):
-                ep(f"{n}={units[n].name}")
+                #ep(f"{n}={units[n].name}")
+                pass
 
         for n in range(0,len(units)):
             if n % 10 == 0:
-                ep(f"\r{n}/{nunits} processed...\x1b[K")
+                #ep(f"\r{n}/{nunits} processed...\x1b[K")
+                pass
             self.Unit(units[n].name)
 
         ep("\rAll units processed.")

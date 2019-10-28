@@ -1,20 +1,19 @@
 from visitor import *
 from graph import *
 from util import ep
+from pprint import pformat
 
 class CycleDetection:
 
-    #example: ClassVar[int] = 4
-
     @staticmethod
-    def template_func(data: dict):
+    def template_func(data):
         return {'count':0, 'cycle':0}
 
     @staticmethod
-    def walk_cycle(data: dict) -> NodeList:
+    def walk_cycle(data):
         nid = data.nid
         start = nid
-        verb(f"Walking forward along a cycle from {nid}")
+        #verb(f"Walking forward along a cycle from {nid}")
         seq = [data.n]
         cycle_infos = data.get('cycle_infos',[])
         cycle_infos.append(seq)
@@ -26,7 +25,7 @@ class CycleDetection:
         while v is not None and v.nid != nid:
             seq.append(v.n)
             if itern >= max_iter:
-                log.error(f"Breaking out of loop - either loop is too big (max = {max_iter}) or there is a bug.")
+                log.error("Breaking out of loop - either loop is too big (max = {}) or there is a bug.".format(max_iter))
                 break
             itern += 1
             v.cycle += 1
@@ -35,42 +34,43 @@ class CycleDetection:
             vci.append(seq)
             v.cycle_infos=vci
             if v.v is None:
-                verb(f"Walking back, did not find cycle node {nid} after reaching {v.nid}")
+                #verb(f"Walking back, did not find cycle node {nid} after reaching {v.nid}")
                 break
             v = v.v
         verb("Cycle(length "+str(len(seq))+"):"+"->".join([str(x) for x in seq]))
         return seq
 
     @staticmethod
-    def visit_func(data: dict,iteration: int,origin: Node, steps: int):
+    def visit_func(data,iteration,origin, steps):
         di = data.i
         n = data.n
         if not n:
-            verb(f"ERROR: no node for {data.nid}")
+            #verb(f"ERROR: no node for {data.nid}")
             return False
         nid = data.nid
         visting = data.v
 
-        verb(f"{nid} data iteration={di} step {steps} while iteration={iteration}")
+        #verb(f"{nid} data iteration={di} step {steps} while iteration={iteration}")
         if di == iteration:
-            verb(f"Iteration {iteration}[{steps}] - Found a cycle - Node {nid} was already visited in iteration {iteration}. Arrived via {origin}. Left last time via {data.v}")
+            #verb(f"Iteration {iteration}[{steps}] - Found a cycle - Node {nid} was already visited in iteration {iteration}. Arrived via {origin}. Left last time via {data.v}")
             data.cycle+=1
             #CycleDetection.walk_cycle(data,origin)
             CycleDetection.walk_cycle(data)
             return False
         elif data.count:
-            verb(f"This node was already visited in a previous iteration ({di})")
+            #verb(f"This node was already visited in a previous iteration ({di})")
             return False
         else:
             data.count += 1
             return True
 
     @classmethod
-    def cyclic_nodes(cls,g: Graph):
+    def cyclic_nodes(cls,g):
         v = Visitor(g, CycleDetection.template_func, CycleDetection.visit_func)
         datas = v.Visit()
         cycles = AttrDict()
         cyclic = AttrDict()
+        ep(pformat(datas))
         for nid, data in datas.items():
             c = data.get('cycle', None)
             cis = data.get('cycle_infos', None)

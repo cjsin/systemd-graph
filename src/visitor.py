@@ -1,6 +1,6 @@
 from graph import *
 from util import verb
-from orderedattrdict import AttrDict, Tree, DefaultAttrDict
+from attrdict import AttrDict
 from pprint import pprint, pformat
 import logging
 log = logging.getLogger(__name__)
@@ -24,7 +24,7 @@ class Visitor:
         else:
             return self.g.nodes()
 
-    def init_node(self,nid=None,n=None) -> AttrDict:
+    def init_node(self,nid=None,n=None):
         if n is None and nid is None:
             log.error("init_node called with no valid parameter")
             return None
@@ -67,7 +67,7 @@ class Visitor:
         n   = data.n
 
         # start with this node and visit it
-        verb(f"here, nid={nid}, n={n}, iter={iteration}, origin={origin}")
+        #verb(f"here, nid={nid}, n={n}, iter={iteration}, origin={origin}")
 
         visit_further = self.visit_func(data, iteration, origin, steps)
 
@@ -82,11 +82,11 @@ class Visitor:
 
         visit_also = []
         if not visit_further:
-            verb(f"Will not visit further from node {nid}")
+            verb("Will not visit further from node "+str(nid))
         if visit_further:
-            verb(f"Node {nid} - checking edges.")
+            #verb(f"Node {nid} - checking edges.")
             for e in n.Edges():
-                verb(f"Edge {e}")
+                verb("Edge {}".format(e))
                 if e.b.id == nid:
                     if e.a.id == nid:
                         log.warning("self-loop")
@@ -97,9 +97,9 @@ class Visitor:
                     visit_also.append(e.b.id())
 
             if not visit_also:
-                verb(f"{nid} is terminal or visitor returned False.")
+                verb("{} is terminal or visitor returned False.".format(nid))
             else:
-                verb(f"Will visit {len(visit_also)} nodes from here")
+                verb("Will visit {} nodes from here".format(len(visit_also)))
                 if self.sorting:
                     visit_also = sorted(visit_also)
                 verb("  Will visit also " + ", ".join(visit_also))
@@ -108,7 +108,7 @@ class Visitor:
                 if vid is not None:
                     vdata = data.d.get(vid, None)
                     if not vdata:
-                        verb(f"****BUG***** visitor data for {vid} not yet initialised - edge to un-indexed node, Creating '{vid}'")
+                        verb("****BUG***** visitor data for {} not yet initialised - edge to un-indexed node, Creating it.".format(vid))
                         vdata = self.init_node(nid=vid)
                     data.v=vdata
                     self.visit_node(vdata, iteration, n, steps+1)
@@ -120,7 +120,6 @@ class Visitor:
         iteration = 0
         for data in self.datas.values():
             iteration +=1
-            verb(f"Visiting {data.nid} with iteration = {iteration} step 0 from nowhere")
+            verb("Visiting {} with iteration = {} step 0 from nowhere".format(data.nid,iteration))
             self.visit_node(data, iteration, None, 0)
         return self.datas
-

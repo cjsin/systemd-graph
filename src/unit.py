@@ -4,7 +4,7 @@ import os
 import re
 from pprint import pprint,pformat
 from collections import OrderedDict
-from orderedattrdict import AttrDict
+from attrdict import AttrDict
 import traceback
 
 # Local imports
@@ -63,10 +63,10 @@ class Unit(Node):
         for kind in Unit.RELATIONSHIPS:
             self.relationships[kind]=set()
 
-    def id(self) -> str:
+    def id(self):
         return self.token
 
-    def __str__(self) -> str:
+    def __str__(self):
         return self.token
 
     def _relationships(self, kind):
@@ -86,7 +86,7 @@ class Unit(Node):
         self._relationships(kind).add(e)
         return label
 
-    def _token(self) -> str:
+    def _token(self):
         t = self.name
         t = re.sub('\\\\x2d','-', t)
         t = re.sub("^-[.]","DASH.", t)

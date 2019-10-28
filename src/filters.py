@@ -6,38 +6,38 @@ class GraphFilter:
     def __init__(self):
         pass
 
-    def _filter(self, orig: Graph, filtered: Graph) -> (Graph, int):
+    def _filter(self, orig, filtered):
         filtered.add(orig)
         return filtered, 0
 
-    def filter(self, orig: Graph) -> (Graph, int):
+    def filter(self, orig):
         nn=orig.nodecount()
         ne=orig.edgecount()
         ret, changes2 = self._filter(orig, Graph(orig.name))
         fn=ret.nodecount()
         fe=ret.edgecount()
         changes = (nn-fn) + (ne-fe)
-        ep(f"{self.__class__.__name__} filtered {nn}n/{ne}e to {fn}n/{fe}e ({changes}/{changes2} changes)")
+        #ep(f"{self.__class__.__name__} filtered {nn}n/{ne}e to {fn}n/{fe}e ({changes}/{changes2} changes)")
         return ret, max(changes,changes2)
 
 class AnalysisFilter(GraphFilter):
 
-    def _analysis_filter(self, orig, filtered, analysis) -> (Graph, int):
+    def _analysis_filter(self, orig, filtered, analysis):
         return filtered, 0
 
-    def _filter(self, orig: Graph, filtered: Graph) -> (Graph, int):
+    def _filter(self, orig, filtered):
         analysis=GraphAnalyzer(orig)
         ret,changes = self._analysis_filter(orig,filtered, analysis)
         return ret,changes
 
 class RepeatFilter(GraphFilter):
-    def __init__(self, other_filter: GraphFilter, iterations: int=None):
+    def __init__(self, other_filter, iterations=None):
         if iterations is None:
             iterations=-10
         self.iterations=iterations
         self.other_filter=other_filter
 
-    def _filter(self, orig: Graph, filtered: Graph) -> (Graph, int):
+    def _filter(self, orig, filtered):
         iterations=self.iterations
         filtered.add(orig)
         changes=0
@@ -74,11 +74,12 @@ class RepeatFilter(GraphFilter):
         if not consolidated:
             ep("Filter reached max iterations before consolidating")
         else:
-            ep(f"Filter consolidated after {iterations} iterations.")
+            #ep(f"Filter consolidated after {iterations} iterations.")
+            pass
 
         fn=filtered.nodecount()
         fe=filtered.edgecount()
-        ep(f"Return graph with {fn}n/{fe}e")
+        #ep(f"Return graph with {fn}n/{fe}e")
         return filtered, changes
 
 class CycleFilter(AnalysisFilter):
@@ -88,12 +89,12 @@ class CycleFilter(AnalysisFilter):
     def __init__(self):
         super().__init__()
 
-    def _analysis_filter(self, orig: Graph, filtered: Graph, analysis: GraphAnalyzer) -> (Graph, int):
+    def _analysis_filter(self, orig, filtered, analysis):
         changes=0
         kept={}
         cyclic = analysis.cyclic
         ncyclic = len(cyclic)
-        ep(f"Graph has {ncyclic} nodes participating in cycles")
+        #ep(f"Graph has {ncyclic} nodes participating in cycles")
         for n in orig.nodes():
             nid=n.id()
             if nid in analysis.cyclic:
@@ -118,10 +119,10 @@ class NodeFilter(GraphFilter):
     def __init__(self):
         super().__init__()
 
-    def _filter_node(self, orig: Graph, n: Node, nid: str) -> bool:
+    def _filter_node(self, orig, n, nid):
         return False
 
-    def _filter(self, orig: Graph, filtered: Graph) -> (Graph, int):
+    def _filter(self, orig, filtered):
         changes=0
         nchanges=0
         echanges=0
@@ -144,7 +145,7 @@ class NodeFilter(GraphFilter):
             else:
                 changes+=1
                 echanges+=1
-        ep(f"{echanges} edges excluded for {nchanges} nodes.")
+        #ep(f"{echanges} edges excluded for {nchanges} nodes.")
         return filtered, changes
 
 class AnalysisNodeFilter(GraphFilter):
@@ -154,10 +155,10 @@ class AnalysisNodeFilter(GraphFilter):
     def __init__(self):
         super().__init__()
 
-    def _analysis_node_filter(self, orig: Graph, analysis: GraphAnalyzer, n: Node, nid: str) -> bool:
+    def _analysis_node_filter(self, orig, analysis, n, nid):
         return False
 
-    def _filter(self, orig, filtered) -> (Graph, int):
+    def _filter(self, orig, filtered):
         analysis=GraphAnalyzer(orig)
         changes=0
         kept={}
@@ -180,14 +181,14 @@ class AnalysisNodeFilter(GraphFilter):
         return filtered, changes
 
 class NodeNameFilter(NodeFilter):
-    def __init__(self,patterns: StrList=None,exclude: bool =True):
+    def __init__(self,patterns=None,exclude=True):
         if patterns is None:
             patterns=[]
         self.patterns= patterns
         self.res = [ re.compile(r) for r in patterns]
         self.exclude=exclude
 
-    def _filter_node(self, orig: Graph, n: Node, nid: str) -> bool:
+    def _filter_node(self, orig, n, nid):
         nn = n.name
         for r in self.res:
             #ep(f"Check {nn} against {r}")
@@ -202,7 +203,7 @@ class NodeNameFilter(NodeFilter):
         return not self.exclude
 
 class NodeNameSearch(NodeFilter):
-    def __init__(self,patterns: StrList = []):
+    def __init__(self,patternsList = []):
         super().__init__(patterns, exclude=False)
 
 class InnyOutyFilter(AnalysisNodeFilter):
@@ -212,26 +213,26 @@ class InnyOutyFilter(AnalysisNodeFilter):
     def __init__(self):
         super().__init__()
 
-    def _analysis_node_filter(self, orig: Graph, analysis: GraphAnalyzer, n: Node, nid: str) -> bool:
+    def _analysis_node_filter(self, orig, analysis, n, nid):
         i = analysis.ins[nid]
         o = analysis.outs[nid]
         return self._filter_inny_outie(orig, analysis, n, nid, i, o)
 
-    def _filter_inny_outie(self, orig: Graph, analysis: GraphAnalyzer, n: Node, nid: str, innies: int, outies: int) -> bool:
+    def _filter_inny_outie(self, orig, analysis, n, nid, innies, outies):
         return False
 
 class LeafFilter(InnyOutyFilter):
     """
     Filter out leaf nodes (1 link only, in or out, cannot be part of a cycle)
     """
-    def _filter_inny_outie(self, orig: Graph, analysis: GraphAnalyzer, n: Node, nid: str, innies: int, outies: int) -> bool:
+    def _filter_inny_outie(self, orig, analysis, n, nid, innies, outies):
         return  (innies + outies) < 2
 
 class SinkFilter(InnyOutyFilter):
     """
     Filter out terminal nodes (no out edges, cannot be part of a cycle)
     """
-    def _filter_inny_outie(self, orig: Graph, analysis: GraphAnalyzer, n: Node, nid: str, innies: int, outies: int) -> bool:
+    def _filter_inny_outie(self, orig, analysis, n, nid, innies, outies):
         return outies < 1
 
 class SourceFilter(InnyOutyFilter):
@@ -241,7 +242,7 @@ class SourceFilter(InnyOutyFilter):
     def __init__(self):
         super().__init__()
 
-    def _filter_inny_outie(self, orig: Graph, analysis: GraphAnalyzer, n: Node, nid: str, innies: int, outies: int) -> bool:
+    def _filter_inny_outie(self, orig, analysis, n, nid, innies, outies):
         return innies < 1
 
 class RimFilter(InnyOutyFilter):
@@ -251,5 +252,5 @@ class RimFilter(InnyOutyFilter):
     def __init__(self):
         super().__init__()
 
-    def _filter_inny_outie(self, orig: Graph, analysis: GraphAnalyzer, n: Node, nid: str, innies: int, outies: int) -> bool:
+    def _filter_inny_outie(self, orig, analysis, n, nid, innies, outies):
         return innies < 1 or outies < 1
