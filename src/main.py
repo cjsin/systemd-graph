@@ -63,6 +63,9 @@ def parse_args(argv):
     parser.add_argument("--mounted", action='store_true', default=None)
     parser.add_argument("--plugged", action='store_true', default=None)
 
+    parser.add_argument("--vis", action='store_true', default=False)
+    parser.add_argument("--html", action='store_true', default=False)
+
     args = parser.parse_args(argv)
     return parser, args
 
@@ -227,17 +230,28 @@ def main():
             if 'TIME' in outfile:
                 outfile = outfile.replace('TIME',timestr)
 
+        dotfile = None
         if isinstance(outfile, str):
             with open(outfile,"w") as f:
                 print_lines(dot_lines, file=f)
                 ep("Wrote "+outfile)
-            if args.view:
+                dotfile = outfile
+            htmlfile = os.path.splitext(dotfile)[0]+".html"
+            view_html = args.vis
+            view_dot = args.view
+            generate_html = args.html or view_html
+            if generate_html:
+                import vis
+                vis.save_dotfile(dotfile, htmlfile, show=view_html)
+            elif view_dot:
                 import subprocess
                 subprocess.run(args.viewer.split(' ') + [outfile])
         else:
             if args.view:
                 err("View mode is incompatible with output to stdout/stderr")
             print_lines(dot_lines, file=outfile)
+
+
 
     except:
         traceback.print_exc()

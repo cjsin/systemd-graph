@@ -1,0 +1,5 @@
+#!/bin/bash
+. venv/bin/activate
+#jupyter notebook
+
+python3 src/vis.py "${@}"

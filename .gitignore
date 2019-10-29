@@ -4,3 +4,5 @@ __pycache__
 test*.dot
 .env
 .pytest_cache
+test*.html
+systemd-data*yml
