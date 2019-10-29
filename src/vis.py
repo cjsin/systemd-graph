@@ -40,6 +40,32 @@ def save_dotfile(dotfile, htmlfile, show=False):
     else:
         ep("No file.")
 
+def show_electron(dotfile,htmfile=None,appdir=None):
+    nm = os.path.join("node_modules","electron","dist")
+    nme = os.path.join(nm,"electron")
+    srcdir =  os.path.abspath(os.path.dirname(__file__))
+    topdir =  os.path.dirname(srcdir)
+    tmpldir = os.path.join(srcdir,"html")
+    if appdir is None:
+        appdir = os.path.join(topdir,os.path.join("app","eapp"))
+    electron = os.path.join(srcdir,nme)
+    dotfname=os.path.basename(dotfile)
+    srcfiles=["vis.css","vis-network.min.js"]
+    copyfiles=[os.path.join(tmpldir, x) for x in srcfiles]
+    indexfile=os.path.join(appdir,'index.html')
+    if htmfile is None:
+        htmfile=indexfile
+    import shutil
+    for x in copyfiles:
+        shutil.copyfile(x,os.path.join(appdir, os.path.basename(x)))
+
+    if htmfile != indexfile:
+        shutil.copyfile(htmfile,indexfile)
+
+    save_dotfile(dotfile,htmfile)
+    os.system("{} --no-sandbox \"{}\" &".format(nme,appdir))
+
+
 def go(args):
     os.environ['BROWSER']='chromium'
     net = Vis()

@@ -242,7 +242,10 @@ def main():
             generate_html = args.html or view_html
             if generate_html:
                 import vis
-                vis.save_dotfile(dotfile, htmlfile, show=view_html)
+                if view_html:
+                    vis.show_electron(dotfile)
+                else:
+                    vis.save_dotfile(dotfile, htmlfile, show=view_html)
             elif view_dot:
                 import subprocess
                 subprocess.run(args.viewer.split(' ') + [outfile])

@@ -1,0 +1,14 @@
+#!/bin/bash
+script="${BASH_SOURCE[0]}"
+script=$(readlink -f "${script}")
+script_dir=$(dirname "${script}")
+eapp_dir="${script_dir}/eapp"
+
+set -e 
+cd "${eapp_dir}"
+if [[ ! -d "node_modules" ]]
+then 
+    npm install
+fi 
+
+npm start

@@ -66,3 +66,13 @@ r: $(RUN_REQS)
 dot: $(RUN_REQS)
 	@$(PYTHON) $(RUN_TGT) > test.dot
 	xdot test.dot < /dev/null > /dev/null 2>&1 &
+
+electron:
+	npm install
+
+eapp:
+	cd app/eapp
+	npm install
+
+setup: electron eapp
+
