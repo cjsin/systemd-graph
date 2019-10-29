@@ -68,11 +68,12 @@ dot: $(RUN_REQS)
 	xdot test.dot < /dev/null > /dev/null 2>&1 &
 
 electron:
-	npm install
+	npm install electron
 
 eapp:
 	cd app/eapp
-	npm install
+	npm install node-static
+
 
 setup: electron eapp
 
